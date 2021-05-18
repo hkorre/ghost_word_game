@@ -51,7 +51,7 @@ def Test_2(fragment):
     words = Word_List()
     sublist = words.get_sublist(fragment)
     print("sublist...")
-    print sublist
+    print(sublist)
 
 def Test_3():
     print ("class Word_List: running Test_3.")
