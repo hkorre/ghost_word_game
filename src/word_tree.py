@@ -49,6 +49,9 @@ class Word_Tree:
                 if wNode.is_leaf() is True:
                     self._tree.remove_node(_word[:i])
 
+    def remove_node(self, _fragment):
+        self._tree.remove_node(_fragment)
+
     def add_sublist(self, _sublist):
         for word in _sublist:
             self.add_word(word)
@@ -116,6 +119,24 @@ class Word_Tree:
             if child.data.result == 'win':
                 win_options.append(child_id[-1])
         return win_options
+
+
+    def get_highestUnknown(self, _node_id):
+        highestUnknown_id = 0
+        highestUnknown_percent = 0.0
+        solution = []
+
+        wNode = self._tree.get_node(_node_id)
+        children_ids = wNode.successors(self._tree.identifier)
+        for child_id in children_ids:
+            child = self._tree.get_node(child_id)
+            if child.data.result == 'unknown':
+                if child.data.percent_win > highestUnknown_percent:
+                    highestUnknown_id = child_id
+                    highestUnknown_percent = child.data.percent_win
+        if highestUnknown_id != 0:
+            solution.append(highestUnknown_id[-1])
+        return solution
 
 
 ## TESTS ##
