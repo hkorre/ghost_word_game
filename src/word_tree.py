@@ -9,9 +9,10 @@ from treelib import Node, Tree
 
 
 class Letter(object):
-    def __init__(self, _result, _depth):
+    def __init__(self, _result, _depth, _percent_win):
         self.result = _result
         self.depth = _depth
+        self.percent_win = _percent_win
 
 class Word_Tree:
 
@@ -29,6 +30,9 @@ class Word_Tree:
 
     def show_treeData(self):
         self._tree.show(data_property='result')
+
+    def show_treePercent(self):
+        self._tree.show(data_property='percent_win')
 
     def add_word(self, _word):
         for i in range(1, len(_word)+1):
@@ -49,20 +53,32 @@ class Word_Tree:
         for word in _sublist:
             self.add_word(word)
 
+    def _calc_winPercent(self, _node_id):
+        wNode = self._tree.get_node(_node_id)
+        percent_sum = 0.0
+
+        children_ids = wNode.successors(self._tree.identifier)
+        for child_id in children_ids:
+            child = self._tree.get_node(child_id)
+            percent_sum += child.data.percent_win
+
+        return percent_sum/len(children_ids)
+
     def _label_recursion(self, _node_id, _count, _num_players, _user_id):
         wNode = self._tree.get_node(_node_id)
 
         # base case
         if wNode.is_leaf() is True:
             if (_count-1) % _num_players != (_user_id-1):
-                wNode.data = Letter('win', _count)
+                wNode.data = Letter('win', _count, 1.0)
             else:
-                wNode.data = Letter('loss', _count)
+                wNode.data = Letter('loss', _count, 0.0)
             return
 
         # recursive call
         num_wins = 0
         num_losses = 0
+        num_unknown = 0
 
         children_ids = wNode.successors(self._tree.identifier)
         for child_id in children_ids:
@@ -70,21 +86,36 @@ class Word_Tree:
             child = self._tree.get_node(child_id)
             if child.data.result == 'win':
                 num_wins += 1
-            else:
+            elif child.data.result == 'loss':
                 num_losses += 1
+            else:
+                num_unknown += 1
 
         # label based on children
-        if num_losses == 0:
-            wNode.data = Letter('win', _count)
+        if num_unknown != 0:
+            wNode.data = Letter('unknown', _count, self._calc_winPercent(_node_id))
+        elif num_losses == 0:
+            wNode.data = Letter('win', _count, 1.0)
         elif num_wins == 0:
-            wNode.data = Letter('loss', _count)
+            wNode.data = Letter('loss', _count, 0.0)
         else:
-            wNode.data = Letter('unknown', _count)
+            wNode.data = Letter('unknown', _count, self._calc_winPercent(_node_id))
 
 
     def label_tree(self, _node_id, _num_players, _user_id):
         print('labelling tree')
         self._label_recursion(_node_id, 0, _num_players, _user_id)
+
+
+    def get_winOptions(self, _node_id):
+        win_options = []
+        wNode = self._tree.get_node(_node_id)
+        children_ids = wNode.successors(self._tree.identifier)
+        for child_id in children_ids:
+            child = self._tree.get_node(child_id)
+            if child.data.result == 'win':
+                win_options.append(child_id[-1])
+        return win_options
 
 
 ## TESTS ##
@@ -119,11 +150,13 @@ def Test_5():
     wtree = Word_Tree()
     sublist = ['hasan', 'korre', 'hamburger', 'jump']
     wtree.add_sublist(sublist)
-    wtree.label_tree(0, 3, 1)
+    #wtree.label_tree(0, 3, 1)
     #wtree.label_tree(0, 3, 2)
-    #wtree.label_tree(0, 3, 3)
+    wtree.label_tree(0, 3, 3)
     wtree.show_tree()
     wtree.show_treeData()
+    wtree.show_treePercent()
+    print('win options = ' + str(wtree.get_winOptions('ha')))
 
 if __name__ == "__main__":
     Test_1()
