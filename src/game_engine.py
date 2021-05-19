@@ -87,6 +87,10 @@ class Game_Engine:
             return
             
         print('Letter picked is - ' + letter)
+        if letter == '':
+            self.is_gameOver = True
+            print('Invalid letter pick! - computer could not find a winning answer')
+            return
 
         self.turn += 1
 
