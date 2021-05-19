@@ -17,49 +17,6 @@ class BotV2:
         self.wordTree = None
         if DEBUG is True: print("Bot #" + str(self.user_id) + " created.")
 
-#    def _is_evenPlayer(self, _fragment):
-#        frag_len = len(_fragment)
-#        if (frag_len % 2) == 0:
-#            if DEBUG is True: print("  Bot is the odd player.")
-#            return False
-#        else:
-#            if DEBUG is True: print("  Bot is the even player.")
-#            return True
-#
-#    def _get_sublistOdd(self, _sublist):
-#        if DEBUG is True: print("  Getting odd-legnth word list.")
-#        odd_list = []
-#        for word in _sublist:
-#            if (len(word) % 2) != 0:
-#                odd_list.append(word) 
-#        return odd_list
-#        
-#
-#    def _get_sublistEven(self, _sublist):
-#        if DEBUG is True: print("  Getting even-legnth word list.")
-#        even_list = []
-#        for word in _sublist:
-#            if (len(word) % 2) == 0:
-#                even_list.append(word) 
-#        return even_list
-#
-#    def _get_wordRandom(self, _sublist):
-#       idx = random.randint(0, len(_sublist)-1)
-#       return _sublist[idx]
-#
-#    def _get_wordLongest(self, _sublist):
-#        max_length = 0
-#        choices = []
-#        for word in _sublist:
-#            if len(word) > max_length:
-#                max_length = len(word)
-#                choices = []
-#                choices.append(word)
-#            elif len(word) == max_length:
-#                choices.append(word)
-#        idx = random.randint(0, len(choices)-1)
-#        return choices[idx]
-
     def _display_tree(self):
         self.wordTree.show_tree()
         self.wordTree.show_treeData()
@@ -83,9 +40,6 @@ class BotV2:
             self.wordTree.add_sublist(sublist)
             self.wordTree.label_tree(0, self.num_players, self.user_id)
 
-
-
-
         while solution == None:
             # check if any path is an automatic win...
             if len(self.wordTree.get_winOptions(_fragment)) != 0:
@@ -102,65 +56,30 @@ class BotV2:
             else:
                 solnList = self.wordTree.get_longestLoss(_fragment)
                 solnWord = self._get_random(solnList)
-                solution = solnWord[len(_fragment)]
+                if len(solnWord) > len(_fragment):
+                    solution = solnWord[len(_fragment)]
+                else:
+                    solution = ''
+
+            newFragment = _fragment + solution
 
             # check if the answer is a word...
-            newFragment = _fragment + solution
             if self.wordList.is_wordOfFour(newFragment):
                 print('solution - ' + solution + ' is invalid!')
                 self.wordTree.remove_node(newFragment)
                 solution = None
+                continue
+
+            # check if path leads to a word of length < 4...
+            sublist = self.wordList.get_sublist(newFragment)
+            if len(sublist) == 1 and len(sublist[0]) < 4:
+                print('solution - ' + solution + ' is invalid!')
+                self.wordTree.remove_node(newFragment)
+                solution = None
+                continue
+
 
         return solution
-
-#    def pick_letter(self, _fragment):
-#        print("Bot #" + str(self.num) + ": Picking letter...")
-#
-#        if DEBUG is True: print("  fragment = " + _fragment)
-#        sublist = self.wordList.get_sublist(_fragment)
-#        if DEBUG is True: print("  There are " + str(len(sublist)) + " words to chose from.")
-#
-#        is_evenPlayer = self._is_evenPlayer(_fragment)
-#        if is_evenPlayer:
-#            win_list = self._get_sublistOdd(sublist)
-#            lose_list = self._get_sublistEven(sublist)
-#        else:
-#            win_list = self._get_sublistEven(sublist)
-#            lose_list = self._get_sublistOdd(sublist)
-#
-#        goal_word = None
-# 
-#        while goal_word is None:
-#            if len(win_list) > 0:
-#                goal_word = self._get_wordRandom(win_list)
-#                if goal_word == _fragment:
-#                    win_list.remove(goal_word)
-#                    goal_word = None
-#                else:
-#                    new_fragment = _fragment + goal_word[len(_fragment)]
-#                    if self.wordList.is_wordOfFour(new_fragment):
-#                        win_list.remove(goal_word)
-#                        goal_word = None
-#            elif len(lose_list) > 0:
-#                goal_word = self._get_wordLongest(lose_list)
-#                if goal_word == _fragment:
-#                    win_list.remove(goal_word)
-#                    goal_word = None
-#                else:
-#                    new_fragment = _fragment + goal_word[len(_fragment)]
-#                    if self.wordList.is_wordOfFour(new_fragment):
-#                        lose_list.remove(goal_word)
-#                        goal_word = None
-#            else:
-#                break
-#
-#        if goal_word is not None:
-#            if DEBUG is True: print("  goal_word = " + goal_word)
-#            return goal_word[len(_fragment)]
-#
-#        if DEBUG is True: print("  No goal_word found!")
-#        return None
-
 
 
 

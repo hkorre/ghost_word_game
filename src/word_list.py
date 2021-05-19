@@ -22,10 +22,10 @@ class Word_List:
 
     def is_word(self, fragment):
         if fragment in self._list:
-            if DEBUG is True: print(fragment + ' is in the word list!')
+            if DEBUG is True: print('word_list.py: ' + fragment + ' is in the word list!')
             return True
         else:
-            if DEBUG is True: print(fragment + ' is not in the word list.')
+            if DEBUG is True: print('word_list.py ' + fragment + ' is not in the word list.')
             return False
 
     def is_wordOfFour(self, fragment):

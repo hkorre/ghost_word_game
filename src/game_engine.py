@@ -1,6 +1,5 @@
-#!/usr/bin/env python2.7
 
-from bot import Bot
+from botV2 import BotV2
 from word_list import Word_List
 
 
@@ -25,10 +24,10 @@ class Game_Engine:
         num_bots = int(input("How many bots? "))
         for j in range(num_bots):
             entry = {}
-            name = 'Bot ' + str(j)
+            name = 'Bot ' + str(i+j+1)
             entry['name'] = name
             entry['is_human'] = False
-            entry['object'] = Bot(j)
+            entry['object'] = BotV2(i+j+1, num_humans+num_bots)
             self.players.append(entry)
 
         print("Game_Engine created.")
@@ -39,11 +38,16 @@ class Game_Engine:
     def _is_validFragment(self, _fragment):
         sublist = self.wordList.get_sublist(_fragment)
         if self.wordList.is_wordOfFour(_fragment):
+            print("Invalid Letter: word of length > 4")
+            return False
+        elif len(sublist) == 1 and len(sublist[0]) < 4:
+            print("Invalid Letter: follow on word length < 4")
             return False
         elif len(sublist) >= 2:
             return True
         elif len(sublist) == 1 and sublist[0] != _fragment:
             return True
+        print("Invalid Letter: fallthrough")
         return False
 
     def play_turn(self):
@@ -61,7 +65,7 @@ class Game_Engine:
         print('Fragment is ' + self.fragment + '.')
 
         if is_human is True:
-            letter = raw_input("What letter do you pick? ")
+            letter = input("What letter do you pick? ")
 
         else:
             bot = self.players[player_idx]['object']
