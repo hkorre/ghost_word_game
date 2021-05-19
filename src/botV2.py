@@ -98,10 +98,11 @@ class BotV2:
                 highestUnknown = self.wordTree.get_highestUnknown(_fragment)
                 solution = highestUnknown[0]
 
-
             # find longest losing path...
-
-
+            else:
+                solnList = self.wordTree.get_longestLoss(_fragment)
+                solnWord = self._get_random(solnList)
+                solution = solnWord[len(_fragment)]
 
             # check if the answer is a word...
             newFragment = _fragment + solution

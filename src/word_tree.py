@@ -138,6 +138,36 @@ class Word_Tree:
             solution.append(highestUnknown_id[-1])
         return solution
 
+    def _longestLoss_recursion(self, _node_id, _maxLength, _solnList):
+        wNode = self._tree.get_node(_node_id)
+
+        # base case
+        if wNode.is_leaf() is True:
+            if len(_node_id) > _maxLength:
+                _maxLength = len(_node_id)
+                _solnList = []
+                _solnList.append(_node_id)
+            elif len(_node_id) == _maxLength:
+                _solnList.append(_node_id)
+            return _maxLength, _solnList
+
+        # recursive call
+        children_ids = wNode.successors(self._tree.identifier)
+        for child_id in children_ids:
+            temp_maxLength, temp_solnList = self._longestLoss_recursion(child_id, _maxLength, _solnList)
+            if temp_maxLength > _maxLength:
+                _maxLength = temp_maxLength
+                _solnList = []
+                _solnList.extend(temp_solnList)
+            elif temp_maxLength == _maxLength:
+                _solnList.extend(temp_solnList)
+
+        return _maxLength, _solnList
+
+    def get_longestLoss(self, _node_id):
+        maxLength, solnList = self._longestLoss_recursion(_node_id, 0, [])
+        return solnList
+
 
 ## TESTS ##
 
